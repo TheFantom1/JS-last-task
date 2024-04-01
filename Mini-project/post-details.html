@@ -36,16 +36,21 @@
 <div id="postComments" class="comment-section"></div>
 
 <script>
+    // Отримуємо посилання на елементи в DOM
     const postDetailsDiv = document.getElementById('postDetails');
     const postCommentsDiv = document.getElementById('postComments');
 
+    
+    // Отримуємо параметр postId з URL-адреси
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('postId');
 
     function getPostDetails() {
+        // Виконуємо запит до API, щоб отримати деталі поста за його ідентифікатором
         fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
             .then(response => response.json())
             .then(post => {
+                // Виводимо деталі поста на сторінку
                 postDetailsDiv.innerHTML = `
                         <h2>${post.userId}</h2>
                         <h2>${post.id}</h2>
@@ -57,9 +62,11 @@
     }
 
     function getPostComments() {
+        // Виконуємо запит до API, щоб отримати коментарі до поста за його ідентифікатором
         fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
             .then(response => response.json())
             .then(comments => {
+                // Для кожного коментаря створюємо елемент та виводимо на сторінку
                 comments.forEach(comment => {
                     const commentDiv = document.createElement('div');
                     commentDiv.classList.add('comment');
