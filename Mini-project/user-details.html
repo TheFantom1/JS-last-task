@@ -71,18 +71,22 @@
 <div id="userPosts"></div>
 
 <script>
-    const userDetailsDiv = document.getElementById('userDetails');
-    const showPostsButton = document.getElementById('showPostsButton');
-    const userPostsDiv = document.getElementById('userPosts');
+// Отримуємо посилання на елементи в DOM
+const userDetailsDiv = document.getElementById('userDetails');
+const showPostsButton = document.getElementById('showPostsButton');
+const userPostsDiv = document.getElementById('userPosts');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('id');
+// Отримуємо ідентифікатор користувача з URL-адреси
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('id');
 
-    function getUserDetails() {
-        fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
-            .then(response => response.json())
-            .then(user => {
-                userDetailsDiv.innerHTML = `
+function getUserDetails() {
+    // Виконуємо запит до API, щоб отримати деталі користувача за його ідентифікатором
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then(response => response.json())
+        .then(user => {
+            // Виводимо деталі користувача на сторінку
+            userDetailsDiv.innerHTML = `
 <ul>
     <li><strong>ID:</strong> ${user.id}</li>
     <li><strong>Name:</strong> ${user.name}</li>
@@ -113,48 +117,57 @@
     </li>
 </ul>
 `;
-            })
-            .catch(error => console.log(error));
+        })
+        .catch(error => console.log(error));
+}
+
+
+function getUserPosts() {
+    // Виконуємо запит до API, щоб отримати пости користувача за його ідентифікатором
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`)
+        .then(response => response.json())
+        .then(posts => {
+            // Очищаємо контейнер для постів користувача
+            userPostsDiv.innerHTML = '';
+
+            // Додаємо кожен пост до контейнера
+            posts.forEach(post => {
+                const postContainer = document.createElement('div');
+                postContainer.classList.add('post-container');
+
+                const postTitle = document.createElement('h3');
+                postTitle.textContent = post.title;
+
+                const postLink = document.createElement('a');
+                postLink.href = `post-details.html?postId=${post.id}`;
+                postLink.textContent = 'View Post Details';
+
+                postContainer.appendChild(postTitle);
+                postContainer.appendChild(postLink);
+
+                userPostsDiv.appendChild(postContainer);
+            });
+        })
+        .catch(error => console.log(error));
+}
+
+showPostsButton.addEventListener('click', () => {
+    // Перевіряємо, чи показані пости, і змінюємо їх стан
+    if (userPostsDiv.style.display === 'none' || userPostsDiv.style.display === '') {
+        // Якщо пости приховані, показуємо їх та змінюємо текст кнопки
+        getUserPosts();
+        userPostsDiv.style.display = 'grid';
+        showPostsButton.textContent = 'Hide Posts';
+    } else {
+        // Якщо пости відображені, приховуємо їх та змінюємо текст кнопки
+        userPostsDiv.style.display = 'none';
+        showPostsButton.textContent = 'Posts of Current User';
     }
+});
 
-    function getUserPosts() {
-        fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`)
-            .then(response => response.json())
-            .then(posts => {
-                userPostsDiv.innerHTML = '';
+// Викликаємо функцію для отримання деталей користувача
+getUserDetails();
 
-                posts.forEach(post => {
-                    const postContainer = document.createElement('div');
-                    postContainer.classList.add('post-container');
-
-                    const postTitle = document.createElement('h3');
-                    postTitle.textContent = post.title;
-
-                    const postLink = document.createElement('a');
-                    postLink.href = `post-details.html?postId=${post.id}`;
-                    postLink.textContent = 'View Post Details';
-
-                    postContainer.appendChild(postTitle);
-                    postContainer.appendChild(postLink);
-
-                    userPostsDiv.appendChild(postContainer);
-                });
-            })
-            .catch(error => console.log(error));
-    }
-
-    showPostsButton.addEventListener('click', () => {
-        if (userPostsDiv.style.display === 'none' || userPostsDiv.style.display === '') {
-            getUserPosts();
-            userPostsDiv.style.display = 'grid';
-            showPostsButton.textContent = 'Hide Posts';
-        } else {
-            userPostsDiv.style.display = 'none';
-            showPostsButton.textContent = 'Posts of Current User';
-        }
-    });
-
-    getUserDetails();
 </script>
 </body>
 </html>
